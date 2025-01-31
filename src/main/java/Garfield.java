@@ -20,35 +20,43 @@ public class Garfield {
                 "\n" ;
         System.out.println("---");
         System.out.println("Summoning\n" + logo);
-//        System.out.println("---");
     }
 
-    public static void Greet() { Respond("Oh. It's you. Hello."); }
+    public static void Greet() { Respond("Oh. It's you. Hello. What do you want?"); }
 
     public static void Exit() {
         Respond("Fine, I'm leaving to find more lasagna.");
     }
 
     public static void main(String[] args) {
-//        String logo = "GARFIELD";
 
         Logo();
         Greet();
-//        System.out.println("---");
 
         Scanner input = new Scanner(System.in);
         String line = input.nextLine();
         boolean exit = false;
 
-        do {
+        List l = new List(new String[]{});
+
+        while (!exit) {
+
             if (line.equals("bye")) {
                 exit = true;
             } else {
-                Respond(line);
+                switch(line) {
+                    case "list":
+                        Respond(l.displayTasks());
+                        break;
+                        default:
+                            Respond(l.addTask(line));
+                            break;
+                }
+
                 line = input.nextLine();
             }
 
-        } while (!exit);
+        }
 
         Exit();
     }

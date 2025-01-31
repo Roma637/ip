@@ -15,7 +15,7 @@ bin/
 
 *.class
 
-git-token
+git_token
 
 /text-ui-test/ACTUAL.TXT
 text-ui-test/EXPECTED-UNIX.TXT
