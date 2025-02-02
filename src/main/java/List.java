@@ -42,9 +42,21 @@ public class List {
         return("added task: " + task);
     }
 
-    public void markTask(int taskIndex) {}
+    public String markTask(int taskIndex) {
+        if (taskIndex < size) {
+            taskList[taskIndex].setDone(true);
+            return "I've marked this as done: " + taskList[taskIndex].getTaskName();
+        }
+        return "ERROR. Index not in list";
+    }
 
-    public void unmarkTask(int taskIndex) {}
+    public String unmarkTask(int taskIndex) {
+        if (taskIndex < size) {
+            taskList[taskIndex].setDone(false);
+            return "I've unmarked this as done: " + taskList[taskIndex].getTaskName();
+        }
+        return "ERROR. Index not in list";
+    }
 
     public String displayTasks() {
 

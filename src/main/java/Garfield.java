@@ -44,13 +44,23 @@ public class Garfield {
             if (line.equals("bye")) {
                 exit = true;
             } else {
-                switch(line) {
-                    case "list":
-                        Respond(l.displayTasks());
-                        break;
-                        default:
-                            Respond(l.addTask(line));
-                            break;
+
+                if (line.equals("list")) {
+                    Respond(l.displayTasks());
+                } else if (line.startsWith("unmark")) {
+                    // somehow grab the task index and -1 here
+                    int index = (Integer.parseInt(line.substring(7).trim()) - 1);
+                    System.out.println(index);
+                    Respond(l.unmarkTask(index));
+//                    Respond("i see you want me to UNmark this");
+                } else if (line.startsWith("mark")) {
+                    int index = (Integer.parseInt(line.substring(5).trim()) - 1);
+                    System.out.println(index);
+                    // somehow grab the task index and -1 here
+                    Respond(l.markTask(index));
+//                    Respond("i see you want me to mark this");
+                } else {
+                    Respond(l.addTask(line));
                 }
 
                 line = input.nextLine();
