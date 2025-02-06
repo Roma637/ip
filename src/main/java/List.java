@@ -1,45 +1,66 @@
 public class List {
-//    private String[] taskList ;
-//    private boolean[] completed ;
-
-    private Task[] taskList ;
-    private int size ;
+    private Task[] taskList;
+    private int size;
 
     public List() {
-        this(new String[]{}) ;
+        this(new String[]{});
     }
 
     public List(String[] args) {
         this.size = args.length;
-
         this.taskList = new Task[100];
-//        this.completed = new boolean[100];
 
         for (int i = 0; i < size; i++) {
             this.taskList[i] = new Task(args[i]);
         }
     }
 
-    public Task[] getTaskList() {
-        return taskList;
-    }
+    public String addTask(String input, String taskType) {
+        String description;
+        Task newTask;
 
-    public void setTaskList(Task[] taskList) {
-        this.taskList = taskList;
-    }
+        switch (taskType) {
+        case "todo":
+            description = input.trim();
+            newTask = new Todo(description);
+            break;
 
-    public int getSize() {
-        return size;
-    }
+        case "deadline":
+            String[] deadlineParts = input.split("/by");
+            if (deadlineParts.length < 2) {
+                return "ERROR: Deadline requires a due date with /by";
+            }
+            description = deadlineParts[0].trim();
+            String deadline = deadlineParts[1].trim();
+            newTask = new Deadline(description, deadline);
+            break;
 
-    public void setSize(int size) {
-        this.size = size;
-    }
+        case "event":
+            // First split by /from to get description
+            String[] fromParts = input.split("/from");
+            if (fromParts.length < 2) {
+                return "ERROR: Event requires start time with /from";
+            }
+            description = fromParts[0].trim();
 
-    public String addTask(String task) {
-        taskList[size] = new Task(task);
+            // Then split remaining part by /to
+            String[] toParts = fromParts[1].split("/to");
+            if (toParts.length < 2) {
+                return "ERROR: Event requires end time with /to";
+            }
+            String startTime = toParts[0].trim();
+            String endTime = toParts[1].trim();
+            newTask = new Event(description, startTime, endTime);
+            break;
+
+        default:
+            newTask = new Task(input.trim());
+            break;
+        }
+
+        taskList[size] = newTask;
         size++;
-        return("added task: " + task);
+        return "added: " + newTask.toString();
     }
 
     public String markTask(int taskIndex) {
@@ -59,22 +80,10 @@ public class List {
     }
 
     public String displayTasks() {
-
-        String whole = "" ;
-
+        String whole = "";
         for (int i = 0; i < size; i++) {
-            whole += String.valueOf(i+1) ;
-            whole += ":[" ;
-            if (this.taskList[i].isDone()) {
-                whole += "X";
-            } else {
-                whole += " ";
-            }
-            whole += "] " + this.taskList[i].getTaskName() + "\n";
-
-//            System.out.println(whole);
+            whole += String.valueOf(i+1) + "." + taskList[i].toString() + "\n";
         }
-
-        return whole ;
+        return whole;
     }
 }

@@ -1,4 +1,5 @@
 import java.util.Scanner;
+import java.util.Arrays;
 
 public class Garfield {
 
@@ -36,34 +37,48 @@ public class Garfield {
         Scanner input = new Scanner(System.in);
         String line = input.nextLine();
         boolean exit = false;
+        int index ;
 
         List l = new List(new String[]{});
 
         while (!exit) {
 
-            if (line.equals("bye")) {
+            String trimmedLine = line.trim() ;
+
+            if (trimmedLine.equals("bye")) {
                 exit = true;
             } else {
 
-                if (line.equals("list")) {
+                String[] parts = trimmedLine.split("\\s+", 2) ;
+                String command = parts[0] ;
+                String[] arguments = (parts.length > 1) ? Arrays.copyOfRange(parts, 1, parts.length) : new String[0] ;
+
+                switch (command) {
+                case "list":
                     Respond(l.displayTasks());
-                } else if (line.startsWith("unmark")) {
-                    // somehow grab the task index and -1 here
-                    int index = (Integer.parseInt(line.substring(7).trim()) - 1);
-                    System.out.println(index);
+                    break;
+                case "unmark":
+                    index = (Integer.parseInt(arguments[0].trim()) - 1);
+//                    System.out.println(index);
                     Respond(l.unmarkTask(index));
-//                    Respond("i see you want me to UNmark this");
-                } else if (line.startsWith("mark")) {
-                    int index = (Integer.parseInt(line.substring(5).trim()) - 1);
-                    System.out.println(index);
-                    // somehow grab the task index and -1 here
+                    break;
+                case "mark":
+                    index = (Integer.parseInt(arguments[0].trim()) - 1);
+//                    System.out.println(index);
                     Respond(l.markTask(index));
-//                    Respond("i see you want me to mark this");
-                } else {
-                    Respond(l.addTask(line));
+                    break;
+                case "todo":
+                case "event":
+                case "deadline":
+                    String fullArgument = String.join(" ", arguments);
+                    Respond(l.addTask(fullArgument, command));
+                    break;
+                default:
+                    Respond(l.addTask(trimmedLine, "default"));
                 }
 
                 line = input.nextLine();
+
             }
 
         }

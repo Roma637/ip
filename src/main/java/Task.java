@@ -1,9 +1,11 @@
 public class Task {
-    private String taskName;
-    private boolean done;
+    protected String taskName;
+    protected String taskType;
+    protected boolean done;
 
     public Task(String taskName, boolean done) {
         this.taskName = taskName;
+        this.taskType = "default";
         this.done = done;
     }
 
@@ -23,4 +25,10 @@ public class Task {
         this.done = done;
     }
 
+    public String toString() {
+        String a = "[" + taskType + "][" ;
+        if (done) {a += "X";} else {a += " ";}
+        a += "] " + taskName ;
+        return a;
+    }
 }
