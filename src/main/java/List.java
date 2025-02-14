@@ -15,9 +15,13 @@ public class List {
         }
     }
 
-    public String addTask(String input, String taskType) {
+    public String addTask(String input, String taskType) throws TaskException {
         String description;
         Task newTask;
+
+        if (input.equals("")) {
+            return "Error: input cannot be empty, just like my stomach";
+        }
 
         switch (taskType) {
         case "todo":
@@ -28,7 +32,7 @@ public class List {
         case "deadline":
             String[] deadlineParts = input.split("/by");
             if (deadlineParts.length < 2) {
-                return "ERROR: Deadline requires a due date with /by";
+                throw new TaskException("Deadline requires a due date with /by");
             }
             description = deadlineParts[0].trim();
             String deadline = deadlineParts[1].trim();
@@ -36,17 +40,15 @@ public class List {
             break;
 
         case "event":
-            // First split by /from to get description
             String[] fromParts = input.split("/from");
             if (fromParts.length < 2) {
-                return "ERROR: Event requires start time with /from";
+                throw new TaskException("Event requires start time with /from");
             }
             description = fromParts[0].trim();
 
-            // Then split remaining part by /to
             String[] toParts = fromParts[1].split("/to");
             if (toParts.length < 2) {
-                return "ERROR: Event requires end time with /to";
+                throw new TaskException("Event requires end time with /to");
             }
             String startTime = toParts[0].trim();
             String endTime = toParts[1].trim();
@@ -58,32 +60,43 @@ public class List {
             break;
         }
 
+        if (size >= taskList.length) {
+            throw new TaskException("You have too many tasks, what's wrong with you?");
+        }
+
         taskList[size] = newTask;
         size++;
-        return "added: " + newTask.toString();
+        return "Another task to do? Ugh. Writing it down: " + newTask.toString();
     }
 
-    public String markTask(int taskIndex) {
-        if (taskIndex < size) {
-            taskList[taskIndex].setDone(true);
-            return "I've marked this as done: " + taskList[taskIndex].getTaskName();
+    public String markTask(int taskIndex) throws TaskException {
+        if (taskIndex < 0 || taskIndex >= size) {
+            throw new TaskException("Can you count? That task index doesn't exist: " + (taskIndex + 1));
         }
-        return "ERROR. Index not in list";
+        taskList[taskIndex].setDone(true);
+        return "Another one down: " + taskList[taskIndex].getTaskName();
     }
 
-    public String unmarkTask(int taskIndex) {
-        if (taskIndex < size) {
-            taskList[taskIndex].setDone(false);
-            return "I've unmarked this as done: " + taskList[taskIndex].getTaskName();
+    public String unmarkTask(int taskIndex) throws TaskException {
+        if (taskIndex < 0 || taskIndex >= size) {
+            throw new TaskException("Can you count? That task index doesn't exist: " + (taskIndex + 1));
         }
-        return "ERROR. Index not in list";
+        taskList[taskIndex].setDone(false);
+        return "So you lied to me? Marking this task as undone: " + taskList[taskIndex].getTaskName();
     }
 
-    public String displayTasks() {
-        String whole = "";
+    public String displayTasks() throws TaskException {
+        if (size == 0) {
+            throw new TaskException("You've finished all your tasks. Incredible.");
+        }
+
+        StringBuilder whole = new StringBuilder();
         for (int i = 0; i < size; i++) {
-            whole += String.valueOf(i+1) + "." + taskList[i].toString() + "\n";
+            whole.append(String.valueOf(i + 1))
+                    .append(".")
+                    .append(taskList[i].toString())
+                    .append("\n");
         }
-        return whole;
+        return whole.toString();
     }
 }
