@@ -102,15 +102,19 @@ public class List {
         return "So you lied to me? Marking this task as undone: " + taskList.get(taskIndex).getTaskName();
     }
 
-//    public String deleteTask(int taskIndex) throws TaskException {
-//        if (taskIndex < 0 || taskIndex >= taskList.size()) {
-//            throw new TaskException("Can you count? That task index doesn't exist: " + (taskIndex + 1));
-//        }
-////        taskList[taskIndex].setDone(true);
-////        return "Another one down: " + taskList[taskIndex].getTaskName();
-//        String repond = "Go away task! " + taskList[taskIndex].getTaskName();
+    public String deleteTask(int taskIndex) throws TaskException {
+        if (taskIndex < 0 || taskIndex >= taskList.size()) {
+            throw new TaskException("Can you count? That task index doesn't exist: " + (taskIndex + 1));
+        }
+//        taskList[taskIndex].setDone(true);
+//        return "Another one down: " + taskList[taskIndex].getTaskName();
+        String repond = "Go away task! " + taskList.get(taskIndex).getTaskName();
 //        taskList[taskIndex] = null;
-//    }
+
+        taskList.remove(taskIndex);
+
+        return repond;
+    }
 
     public String displayTasks() throws TaskException {
         if (taskList.size() == 0) {
