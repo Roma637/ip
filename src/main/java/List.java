@@ -1,3 +1,5 @@
+import java.io.IOException;
+
 public class List {
     private Task[] taskList;
     private int size;
@@ -13,6 +15,10 @@ public class List {
         for (int i = 0; i < size; i++) {
             this.taskList[i] = new Task(args[i]);
         }
+    }
+
+    public int getSize() {
+        return this.size;
     }
 
     public String addTask(String input, String taskType) throws TaskException {
