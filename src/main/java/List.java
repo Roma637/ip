@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 public class List {
     private ArrayList<Task> taskList;
-//    private int size;
 
     public List() {
         this(new String[]{});
@@ -10,13 +9,24 @@ public class List {
 
     public List(String[] args) {
         int size = args.length;
-//        this.taskList = new Task[100];
         this.taskList = new ArrayList<Task>();
 
         for (int i = 0; i < size; i++) {
-//            this.taskList[i] = new Task(args[i]);
             this.taskList.add(new Task(args[i]));
         }
+    }
+
+    public int getSize() {
+        return taskList.size();
+    }
+
+    public ArrayList<Task> getTaskList() {
+        return taskList;
+    }
+
+    public String addTask(Task task) throws TaskException {
+        taskList.add(task);
+        return "Another task to do? Ugh. Writing it down: " + task.toString();
     }
 
     public String addTask(String input, String taskType) throws TaskException {
@@ -64,13 +74,7 @@ public class List {
             break;
         }
 
-//        if (size >= taskList.length) {
-//            throw new TaskException("You have too many tasks, what's wrong with you?");
-//        }
-
-//        taskList[size] = newTask;
         taskList.add(newTask);
-//        size++;
         return "Another task to do? Ugh. Writing it down: " + newTask.toString();
     }
 
@@ -82,8 +86,6 @@ public class List {
         Task toMark = taskList.get(taskIndex);
         toMark.setDone(true);
         taskList.set(taskIndex, toMark);
-
-//        taskList[taskIndex].setDone(true);
 
         return "Another one down: " + taskList.get(taskIndex).getTaskName();
     }
@@ -97,8 +99,6 @@ public class List {
         toUnmark.setDone(false);
         taskList.set(taskIndex, toUnmark);
 
-//        taskList[taskIndex].setDone(false);
-
         return "So you lied to me? Marking this task as undone: " + taskList.get(taskIndex).getTaskName();
     }
 
@@ -106,10 +106,7 @@ public class List {
         if (taskIndex < 0 || taskIndex >= taskList.size()) {
             throw new TaskException("Can you count? That task index doesn't exist: " + (taskIndex + 1));
         }
-//        taskList[taskIndex].setDone(true);
-//        return "Another one down: " + taskList[taskIndex].getTaskName();
         String repond = "Go away task! " + taskList.get(taskIndex).getTaskName();
-//        taskList[taskIndex] = null;
 
         taskList.remove(taskIndex);
 
