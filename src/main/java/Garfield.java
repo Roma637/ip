@@ -61,6 +61,19 @@ public class Garfield {
                 }
                 break;
 
+            case "delete":
+                try {
+                    index = Integer.parseInt(arguments[0].trim()) - 1;
+//                    Respond(l.markTask(index));
+                    Respond(l.deleteTask(index));
+
+                } catch (NumberFormatException e) {
+                    Respond("Error: Please provide a valid task number");
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    Respond("Error: Please provide a task number to delete");
+                }
+                break;
+
             case "todo":
             case "event":
             case "deadline":
