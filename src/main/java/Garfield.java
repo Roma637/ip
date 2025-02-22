@@ -1,5 +1,8 @@
-import java.util.Scanner.*;
-import java.util.Arrays;
+import java.util.Scanner;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Garfield {
@@ -32,89 +35,199 @@ public class Garfield {
         Respond("Fine, I'm leaving to find more lasagna.");
     }
 
-    public static List ReadFromFile(String filePath) throws TaskException {
-        List list = new List();
-        try (Scanner scanner = new Scanner(new File(filePath))) {
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                if (line.isEmpty()) {
-                    continue;
-                }
+//    public static List ReadFromFile(String filePath) throws TaskException {
+//        List list = new List();
+//        try (Scanner scanner = new Scanner(new File(filePath))) {
+//            while (scanner.hasNextLine()) {
+//                String line = scanner.nextLine().trim();
+//                if (line.isEmpty()) {
+//                    continue;
+//                }
+//
+//                String[] parts = line.split(" \\| ");
+//                if (parts.length < 3) {
+//                    throw new TaskException("Invalid file format");
+//                }
+//
+//                String type = parts[0];
+//                boolean isDone = parts[1].equals("1");
+//                String description = parts[2];
+//
+//                switch (type) {
+//                case "T":
+//                    Todo todo = new Todo(description);
+//                    if (isDone) todo.setDone(true);
+//                    list.addTask(todo);
+//                    break;
+//
+//                case "D":
+//                    if (parts.length < 4) {
+//                        throw new TaskException("Deadline missing due date");
+//                    }
+//                    Deadline deadline = new Deadline(description, parts[3]);
+//                    if (isDone) deadline.setDone(true);
+//                    list.addTask(deadline);
+//                    break;
+//
+//                case "E":
+//                    if (parts.length < 4) {
+//                        throw new TaskException("Event missing time");
+//                    }
+//                    String[] timeComponents = parts[3].split(" ");
+//                    String date = timeComponents[0] + " " + timeComponents[1].split("-")[0];
+//                    String endTime = timeComponents[1].split("-")[1];
+//                    Event event = new Event(description, date, endTime);
+//                    if (isDone) event.setDone(true);
+//                    list.addTask(event);
+//                    break;
+//
+//
+////                case "E":
+////                    if (parts.length < 4) {
+////                        throw new TaskException("Event missing time");
+////                    }
+////                    String[] timeComponents = parts[3].split(" ");
+////                    String date = timeComponents[0];  // Just take the date part
+////                    String[] times = timeComponents[1].split("-");  // Split the time component
+////                    if (times.length != 2) {
+////                        throw new TaskException("Event time must be in format 'start-end'");
+////                    }
+////                    String startTime = date + " " + times[0];
+////                    String endTime = times[1];
+////                    Event event = new Event(description, startTime, endTime);
+////                    if (isDone) event.setDone(true);
+////                    list.addTask(event);
+////                    break;
+//
+//                default:
+//                    throw new TaskException("Unknown task type: " + type);
+//                }
+//            }
+//        } catch (FileNotFoundException e) {
+//            throw new TaskException("Could not find file: " + filePath);
+//        }
+//        return list;
+//    }
+//
+//    public static void WriteToFile(List l, String filePath) throws TaskException {
+//        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
+//
+//            Task[] tasks = l.getTaskList();
+//            int size = l.getSize();
+//
+//            for (int i = 0; i < size; i++) {
+//                Task task = tasks[i];
+//                String line = "";
+//
+//                if (task instanceof Todo) {
+//                    line = "T | ";
+//                } else if (task instanceof Deadline) {
+//                    line = "D | ";
+//                } else if (task instanceof Event) {
+//                    line = "E | ";
+//                }
+//
+//                line += (task.isDone() ? "1" : "0") + " | ";
+//                line += task.getTaskName();
+//
+//                if (task instanceof Deadline) {
+//                    line += " | " + ((Deadline) task).getDeadline();
+//                } else if (task instanceof Event) {
+//                    Event event = (Event) task;
+//                    line += " | " + event.getStart() + "-" + event.getEnd();
+//                }
+//
+//                writer.println(line);
+//            }
+//        } catch (IOException e) {
+//            throw new TaskException("Error writing to file: " + e.getMessage());
+//        }
+//    }
 
-                String[] parts = line.split(" \\| ");
-                if (parts.length < 3) {
-                    throw new TaskException("Invalid file format");
-                }
-
-                String type = parts[0];
-                boolean isDone = parts[1].equals("1");
-                String description = parts[2];
-
-                switch (type) {
-                case "T":
-                    Todo todo = new Todo(description);
-                    if (isDone) todo.setDone(true);
-                    list.addTaskObject(todo);
-                    break;
-
-                case "D":
-                    if (parts.length < 4) {
-                        throw new TaskException("Deadline missing due date");
-                    }
-                    Deadline deadline = new Deadline(description, parts[3]);
-                    if (isDone) deadline.setDone(true);
-                    list.addTaskObject(deadline);
-                    break;
-
-                case "E":
-                    if (parts.length < 4) {
-                        throw new TaskException("Event missing time");
-                    }
-                    String[] timeComponents = parts[3].split(" ");
-                    String date = timeComponents[0] + " " + timeComponents[1].split("-")[0];
-                    String endTime = timeComponents[1].split("-")[1];
-                    Event event = new Event(description, date, endTime);
-                    if (isDone) event.setDone(true);
-                    list.addTaskObject(event);
-                    break;
-
-                default:
-                    throw new TaskException("Unknown task type: " + type);
-                }
+public static List ReadFromFile(String filePath) throws TaskException {
+    List list = new List();
+    try (Scanner scanner = new Scanner(new File(filePath))) {
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine().trim();
+            if (line.isEmpty()) {
+                continue;
             }
-        } catch (FileNotFoundException e) {
-            throw new TaskException("Could not find file: " + filePath);
+
+            String[] parts = line.split(" \\| ");
+            if (parts.length < 3) {
+                throw new TaskException("Invalid file format");
+            }
+
+            String type = parts[0];
+            boolean isDone = parts[1].equals("1");
+            String description = parts[2];
+
+            switch (type) {
+            case "T":
+                Todo todo = new Todo(description);
+                if (isDone) todo.setDone(true);
+                list.addTask(todo);
+                break;
+
+            case "D":
+                if (parts.length < 4) {
+                    throw new TaskException("Deadline missing due date");
+                }
+                Deadline deadline = new Deadline(description, parts[3]);
+                if (isDone) deadline.setDone(true);
+                list.addTask(deadline);
+                break;
+
+            case "E":
+                if (parts.length < 5) {
+                    throw new TaskException("Event missing start or end time");
+                }
+                Event event = new Event(description, parts[3], parts[4]);
+                if (isDone) event.setDone(true);
+                list.addTask(event);
+                break;
+
+            default:
+                throw new TaskException("Unknown task type: " + type);
+            }
         }
-        return list;
+    } catch (FileNotFoundException e) {
+        throw new TaskException("Could not find file: " + filePath);
     }
+    return list;
+}
 
     public static void WriteToFile(List l, String filePath) throws TaskException {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            Task[] tasks = list.getTaskList();
-//            int size = list.size();
-
-
+            Task[] tasks = l.getTaskList();
+            int size = l.getSize();
 
             for (int i = 0; i < size; i++) {
                 Task task = tasks[i];
-                String line = "";
+                StringBuilder line = new StringBuilder();
 
+                // Add type
                 if (task instanceof Todo) {
-                    line = "T | ";
+                    line.append("T | ");
                 } else if (task instanceof Deadline) {
-                    line = "D | ";
+                    line.append("D | ");
                 } else if (task instanceof Event) {
-                    line = "E | ";
+                    line.append("E | ");
                 }
 
-                line += (task.isDone() ? "1" : "0") + " | ";
-                line += task.getTaskName();
+                // Add done status
+                line.append(task.isDone() ? "1" : "0").append(" | ");
 
+                // Add task name
+                line.append(task.getTaskName());
+
+                // Add deadline or event times
                 if (task instanceof Deadline) {
-                    line += " | " + ((Deadline) task).getDeadline();
+                    line.append(" | ").append(((Deadline) task).getDeadline());
                 } else if (task instanceof Event) {
                     Event event = (Event) task;
-                    line += " | " + event.getStart() + "-" + event.getEnd();
+                    line.append(" | ").append(event.getStart());
+                    line.append(" | ").append(event.getEnd());
                 }
 
                 writer.println(line);
@@ -181,8 +294,15 @@ public class Garfield {
 
         Scanner input = new Scanner(System.in);
 
+        List l = new List();
+
         // read from file OR init fresh file
-        List l = ReadFromFile(fp);
+        try {
+            l = ReadFromFile(fp);
+        } catch (TaskException e) {
+            Respond("Sorry, reading from the file went wrong.");
+            return;
+        }
 
         boolean exit = false;
 
@@ -202,7 +322,12 @@ public class Garfield {
         }
 
         // write to file
-        WriteToFile(l, fp);
+        try {
+            WriteToFile(l, fp);
+        } catch (TaskException e) {
+            Respond("Sorry, something went wrong.");
+            return;
+        }
 
         Exit();
     }

@@ -21,6 +21,20 @@ public class List {
         return this.size;
     }
 
+    public Task[] getTaskList() {
+        return taskList;
+    }
+
+    public String addTask(Task task) throws TaskException {
+        if (size >= taskList.length) {
+            throw new TaskException("You have too many tasks, what's wrong with you?");
+        }
+
+        taskList[size] = task;
+        size++;
+        return "Another task to do? Ugh. Writing it down: " + task.toString();
+    }
+
     public String addTask(String input, String taskType) throws TaskException {
         String description;
         Task newTask;
