@@ -68,7 +68,8 @@ public class Garfield {
                     }
                     Deadline deadlineTask = new Deadline(description, parts[3]);
                     // Keep original string for compatibility
-                    deadlineTask.setDeadlineString(parts[3]);
+
+                    deadlineTask.setDeadline(parts[3]);
                     task = deadlineTask;
                     break;
 
@@ -78,8 +79,8 @@ public class Garfield {
                     }
                     Event eventTask = new Event(description, parts[3], parts[4]);
                     // Keep original strings for compatibility
-                    eventTask.setStartString(parts[3]);
-                    eventTask.setEndString(parts[4]);
+                    eventTask.setStart(parts[3]);
+                    eventTask.setEnd(parts[4]);
                     task = eventTask;
                     break;
 
@@ -181,12 +182,30 @@ public class Garfield {
                 }
                 break;
 
+            case "find":
+                if (arguments.length == 0 || arguments[0].trim().isEmpty()) {
+                    Respond("Error: Please provide a keyword to search for");
+                } else {
+                    String keyword = String.join(" ", arguments);
+                    Respond(l.searchTasks(keyword));
+                }
+                break;
+
             case "todo":
             case "event":
             case "deadline":
                 String fullArgument = String.join(" ", arguments);
-                    Respond(l.addTask(fullArgument, command));
-//                }
+                Respond(l.addTask(fullArgument, command));
+                break;
+
+            case "help":
+                Respond("What, you don't know how this works? \n" +
+                        "Available commands:\n" +
+                        "list \n" +
+                        "mark and unmark to mark and unmark tasks\n" +
+                        "delete to delete a task\n" +
+                        "find [keyword] to search for tasks\n" +
+                        "todo, deadline and event followed by information to actually add a task");
                 break;
 
             case "help":
@@ -216,6 +235,7 @@ public class Garfield {
 //        File f = new File(fp);
 //        Respond("Looking for file at: " + f.getAbsolutePath());
 
+
         Scanner input = new Scanner(System.in);
 
         List l ;
@@ -231,6 +251,7 @@ public class Garfield {
             l = new List();
             // If you want to inform the user about creating a new list:
             Respond("Starting with a new empty task list.");
+
         }
 
         boolean exit = false;
