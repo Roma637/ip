@@ -1,7 +1,11 @@
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class List {
     private ArrayList<Task> taskList;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
     public List() {
         this(new String[]{});
@@ -50,7 +54,11 @@ public class List {
             }
             description = deadlineParts[0].trim();
             String deadline = deadlineParts[1].trim();
-            newTask = new Deadline(description, deadline);
+
+            Deadline deadlineTask = new Deadline(description, deadline);
+            // Store original string for compatibility
+            deadlineTask.setDeadlineString(deadline);
+            newTask = deadlineTask;
             break;
 
         case "event":
@@ -66,7 +74,12 @@ public class List {
             }
             String startTime = toParts[0].trim();
             String endTime = toParts[1].trim();
-            newTask = new Event(description, startTime, endTime);
+
+            Event eventTask = new Event(description, startTime, endTime);
+            // Store original strings for compatibility
+            eventTask.setStartString(startTime);
+            eventTask.setEndString(endTime);
+            newTask = eventTask;
             break;
 
         default:
