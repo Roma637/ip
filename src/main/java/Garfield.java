@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public class Garfield {
 
@@ -68,8 +66,7 @@ public class Garfield {
                     }
                     Deadline deadlineTask = new Deadline(description, parts[3]);
                     // Keep original string for compatibility
-
-                    deadlineTask.setDeadline(parts[3]);
+                    deadlineTask.setDeadlineString(parts[3]);
                     task = deadlineTask;
                     break;
 
@@ -79,8 +76,8 @@ public class Garfield {
                     }
                     Event eventTask = new Event(description, parts[3], parts[4]);
                     // Keep original strings for compatibility
-                    eventTask.setStart(parts[3]);
-                    eventTask.setEnd(parts[4]);
+                    eventTask.setStartString(parts[3]);
+                    eventTask.setEndString(parts[4]);
                     task = eventTask;
                     break;
 
@@ -208,15 +205,6 @@ public class Garfield {
                         "todo, deadline and event followed by information to actually add a task");
                 break;
 
-            case "help":
-                Respond("What, you don't know how this works? \n" +
-                        "Available commands:\n" +
-                        "list \n" +
-                        "mark and unmark to mark and unmark tasks\n" +
-                        "delete to delete a task\n" +
-                        "todo, deadline and event followed by information to actually add a task");
-                break;
-
             default:
                 Respond(command + " is not a valid command. Type 'help' to see what is, dummy.");
             }
@@ -229,7 +217,7 @@ public class Garfield {
         Logo();
         Greet();
 
-        String fp = "src/main/java/data.txt" ;
+        String fp = "data.txt" ;
 
         // Add this before attempting to read the file
 //        File f = new File(fp);
@@ -241,17 +229,42 @@ public class Garfield {
         List l ;
 
         // read from file OR init fresh file
-        try {
-            l = ReadFromFile(fp);
-//            Respond("Got your tasks!");
+//        try {
+//            l = ReadFromFile(fp);
+////            Respond("Got your tasks!");
+//
+//        } catch (TaskException e) {
+//            Respond("Sorry, reading from the file went wrong: " + e.getMessage());
+//            // Create a new empty list instead of terminating
+//            l = new List();
+//            // If you want to inform the user about creating a new list:
+//            Respond("Starting with a new empty task list.");
+//
+//        }
 
-        } catch (TaskException e) {
-            Respond("Sorry, reading from the file went wrong: " + e.getMessage());
-            // Create a new empty list instead of terminating
-            l = new List();
-            // If you want to inform the user about creating a new list:
-            Respond("Starting with a new empty task list.");
-
+        File dataFile = new File(fp);
+        if (!dataFile.exists()) {
+            try {
+                dataFile.createNewFile();
+                Respond("No task file found. Created a new one!");
+                l = new List(); // Create an empty list
+            } catch (IOException e) {
+                Respond("Error creating new task file: " + e.getMessage());
+                Respond("Starting with an empty task list anyway.");
+                l = new List();
+            }
+        } else {
+            // read from existing file
+            try {
+                l = ReadFromFile(fp);
+            } catch (TaskException e) {
+                Respond("Sorry, reading from the file went wrong: " + e.getMessage());
+                // Create a new empty list instead of terminating
+                l = new List();
+                // If you want to inform the user about creating a new list:
+                Respond("Starting with a new empty task list.");
+                fp = "data.txt";
+            }
         }
 
         boolean exit = false;
@@ -275,7 +288,7 @@ public class Garfield {
         try {
             WriteToFile(l, fp);
         } catch (TaskException e) {
-            Respond("Sorry, something went wrong.");
+            Respond("Sorry, something went wrong." + e.getMessage());
             return;
         }
 

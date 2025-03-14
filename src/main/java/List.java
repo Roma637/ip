@@ -58,7 +58,7 @@ public class List {
             Deadline deadlineTask = new Deadline(description, deadline);
             // Store original string for compatibility
 
-            deadlineTask.setDeadline(deadline);
+            deadlineTask.setDeadlineString(deadline);
 
             newTask = deadlineTask;
             break;
@@ -80,8 +80,8 @@ public class List {
             Event eventTask = new Event(description, startTime, endTime);
             // Store original strings for compatibility
 
-            eventTask.setStart(startTime);
-            eventTask.setEnd(endTime);
+            eventTask.setStartString(startTime);
+            eventTask.setEndString(endTime);
 
             newTask = eventTask;
             break;
