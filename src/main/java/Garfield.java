@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Garfield {
 
@@ -36,58 +38,65 @@ public class Garfield {
         Respond("Fine, I'm leaving to find more lasagna.");
     }
 
-public static List ReadFromFile(String filePath) throws TaskException {
-    List list = new List();
-    try (Scanner scanner = new Scanner(new File(filePath))) {
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine().trim();
-            if (line.isEmpty()) {
-                continue;
-            }
-
-            String[] parts = line.split(" \\| ");
-            if (parts.length < 3) {
-                throw new TaskException("Invalid file format");
-            }
-
-            String type = parts[0];
-            boolean isDone = parts[1].equals("1");
-            String description = parts[2];
-
-            switch (type) {
-            case "T":
-                Todo todo = new Todo(description);
-                if (isDone) todo.setDone(true);
-                list.addTask(todo);
-                break;
-
-            case "D":
-                if (parts.length < 4) {
-                    throw new TaskException("Deadline missing due date");
+    public static List ReadFromFile(String filePath) throws TaskException {
+        List list = new List();
+        try (Scanner scanner = new Scanner(new File(filePath))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.isEmpty()) {
+                    continue;
                 }
-                Deadline deadline = new Deadline(description, parts[3]);
-                if (isDone) deadline.setDone(true);
-                list.addTask(deadline);
-                break;
 
-            case "E":
-                if (parts.length < 5) {
-                    throw new TaskException("Event missing start or end time");
+                String[] parts = line.split(" \\| ");
+                if (parts.length < 3) {
+                    throw new TaskException("Invalid file format");
                 }
-                Event event = new Event(description, parts[3], parts[4]);
-                if (isDone) event.setDone(true);
-                list.addTask(event);
-                break;
 
-            default:
-                throw new TaskException("Unknown task type: " + type);
+                String type = parts[0];
+                boolean isDone = parts[1].equals("1");
+                String description = parts[2];
+
+                Task task = null;
+                switch (type) {
+                case "T":
+                    task = new Todo(description);
+                    break;
+
+                case "D":
+                    if (parts.length < 4) {
+                        throw new TaskException("Deadline missing due date");
+                    }
+                    Deadline deadlineTask = new Deadline(description, parts[3]);
+                    // Keep original string for compatibility
+                    deadlineTask.setDeadline(parts[3]);
+                    task = deadlineTask;
+                    break;
+
+                case "E":
+                    if (parts.length < 5) {
+                        throw new TaskException("Event missing start or end time");
+                    }
+                    Event eventTask = new Event(description, parts[3], parts[4]);
+                    // Keep original strings for compatibility
+                    eventTask.setStart(parts[3]);
+                    eventTask.setEnd(parts[4]);
+                    task = eventTask;
+                    break;
+
+                default:
+                    throw new TaskException("Unknown task type: " + type);
+                }
+
+                if (isDone) task.setDone(true);
+                list.addTask(task);
             }
+        } catch (FileNotFoundException e) {
+            throw new TaskException("Could not find file: " + filePath);
+        } catch (Exception e) {
+            throw new TaskException("Error reading from file: " + e.getMessage());
         }
-    } catch (FileNotFoundException e) {
-        throw new TaskException("Could not find file: " + filePath);
+        return list;
     }
-    return list;
-}
 
     public static void WriteToFile(List l, String filePath) throws TaskException {
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
@@ -171,16 +180,34 @@ public static List ReadFromFile(String filePath) throws TaskException {
                 }
                 break;
 
+            case "find":
+                if (arguments.length == 0 || arguments[0].trim().isEmpty()) {
+                    Respond("Error: Please provide a keyword to search for");
+                } else {
+                    String keyword = String.join(" ", arguments);
+                    Respond(l.searchTasks(keyword));
+                }
+                break;
+
             case "todo":
             case "event":
             case "deadline":
                 String fullArgument = String.join(" ", arguments);
-                    Respond(l.addTask(fullArgument, command));
-//                }
+                Respond(l.addTask(fullArgument, command));
+                break;
+
+            case "help":
+                Respond("What, you don't know how this works? \n" +
+                        "Available commands:\n" +
+                        "list \n" +
+                        "mark and unmark to mark and unmark tasks\n" +
+                        "delete to delete a task\n" +
+                        "find [keyword] to search for tasks\n" +
+                        "todo, deadline and event followed by information to actually add a task");
                 break;
 
             default:
-                Respond("Error: '" + command + "' is not a valid command");
+                Respond(command + " is not a valid command. Type 'help' to see what is, dummy.");
             }
         } catch (TaskException e) {
             Respond("Error: " + e.getMessage());
@@ -191,7 +218,7 @@ public static List ReadFromFile(String filePath) throws TaskException {
         Logo();
         Greet();
 
-        String fp = "./data.txt" ;
+        String fp = "src/main/java/data.txt" ;
 
         Scanner input = new Scanner(System.in);
 
@@ -201,7 +228,7 @@ public static List ReadFromFile(String filePath) throws TaskException {
         try {
             l = ReadFromFile(fp);
         } catch (TaskException e) {
-            Respond("Sorry, reading from the file went wrong.");
+            Respond("Sorry, reading from the file went wrong:" + e.getMessage());
             return;
         }
 

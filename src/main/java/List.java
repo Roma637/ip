@@ -1,7 +1,11 @@
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class List {
     private ArrayList<Task> taskList;
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("d/M/yyyy HHmm");
 
     public List() {
         this(new String[]{});
@@ -50,7 +54,11 @@ public class List {
             }
             description = deadlineParts[0].trim();
             String deadline = deadlineParts[1].trim();
-            newTask = new Deadline(description, deadline);
+
+            Deadline deadlineTask = new Deadline(description, deadline);
+            // Store original string for compatibility
+            deadlineTask.setDeadline(deadline);
+            newTask = deadlineTask;
             break;
 
         case "event":
@@ -66,7 +74,12 @@ public class List {
             }
             String startTime = toParts[0].trim();
             String endTime = toParts[1].trim();
-            newTask = new Event(description, startTime, endTime);
+
+            Event eventTask = new Event(description, startTime, endTime);
+            // Store original strings for compatibility
+            eventTask.setStart(startTime);
+            eventTask.setEnd(endTime);
+            newTask = eventTask;
             break;
 
         default:
@@ -114,7 +127,7 @@ public class List {
     }
 
     public String displayTasks() throws TaskException {
-        if (taskList.size() == 0) {
+        if (taskList.isEmpty()) {
             throw new TaskException("You've finished all your tasks. Incredible.");
         }
 
@@ -126,5 +139,36 @@ public class List {
                     .append("\n");
         }
         return whole.toString();
+    }
+
+    /**
+     * Searches for tasks containing a keyword in their description
+     * @param keyword The keyword to search for
+     * @return A string with the matching tasks
+     * @throws TaskException If no tasks match the search criteria
+     */
+    public String searchTasks(String keyword) throws TaskException {
+        ArrayList<Task> matchingTasks = new ArrayList<>();
+
+        for (Task task : taskList) {
+            if (task.getTaskName().toLowerCase().contains(keyword.toLowerCase())) {
+                matchingTasks.add(task);
+            }
+        }
+
+        if (matchingTasks.isEmpty()) {
+            throw new TaskException("No tasks found matching '" + keyword + "'.");
+        }
+
+        StringBuilder result = new StringBuilder();
+        result.append("Here are the matching tasks in your list:\n");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            result.append(String.valueOf(i + 1))
+                    .append(".")
+                    .append(matchingTasks.get(i).toString())
+                    .append("\n");
+        }
+
+        return result.toString();
     }
 }
