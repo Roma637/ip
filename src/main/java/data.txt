@@ -1,5 +1,5 @@
 T | 0 | read book
-D | 0 | return book | June 6th
-E | 1 | project meeting | Aug 6th 2pm | 4pm
+D | 0 | return book | 6/6/2025 1200
+E | 1 | project meeting | 6/8/2025 1400 | 6/8/2025 1600
 T | 1 | join sports club
-E | 1 | pgpfest meeting | 9th march 6pm | 8pm
+E | 1 | pgpfest meeting | 9/3/2025 1800 | 9/3/2025 2000

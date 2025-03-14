@@ -68,6 +68,7 @@ public class Garfield {
                     }
                     Deadline deadlineTask = new Deadline(description, parts[3]);
                     // Keep original string for compatibility
+
                     deadlineTask.setDeadline(parts[3]);
                     task = deadlineTask;
                     break;
@@ -122,13 +123,14 @@ public class Garfield {
                 // Add task name
                 line.append(task.getTaskName());
 
-                // Add deadline or event times
+                // Add deadline or event times - store original strings to maintain compatibility
                 if (task instanceof Deadline) {
-                    line.append(" | ").append(((Deadline) task).getDeadline());
+                    Deadline deadlineTask = (Deadline) task;
+                    line.append(" | ").append(deadlineTask.getDeadlineString());
                 } else if (task instanceof Event) {
                     Event event = (Event) task;
-                    line.append(" | ").append(event.getStart());
-                    line.append(" | ").append(event.getEnd());
+                    line.append(" | ").append(event.getStartString());
+                    line.append(" | ").append(event.getEndString());
                 }
 
                 writer.println(line);
@@ -206,6 +208,15 @@ public class Garfield {
                         "todo, deadline and event followed by information to actually add a task");
                 break;
 
+            case "help":
+                Respond("What, you don't know how this works? \n" +
+                        "Available commands:\n" +
+                        "list \n" +
+                        "mark and unmark to mark and unmark tasks\n" +
+                        "delete to delete a task\n" +
+                        "todo, deadline and event followed by information to actually add a task");
+                break;
+
             default:
                 Respond(command + " is not a valid command. Type 'help' to see what is, dummy.");
             }
@@ -220,16 +231,27 @@ public class Garfield {
 
         String fp = "src/main/java/data.txt" ;
 
+        // Add this before attempting to read the file
+//        File f = new File(fp);
+//        Respond("Looking for file at: " + f.getAbsolutePath());
+
+
         Scanner input = new Scanner(System.in);
 
-        List l = new List();
+        List l ;
 
         // read from file OR init fresh file
         try {
             l = ReadFromFile(fp);
+//            Respond("Got your tasks!");
+
         } catch (TaskException e) {
-            Respond("Sorry, reading from the file went wrong:" + e.getMessage());
-            return;
+            Respond("Sorry, reading from the file went wrong: " + e.getMessage());
+            // Create a new empty list instead of terminating
+            l = new List();
+            // If you want to inform the user about creating a new list:
+            Respond("Starting with a new empty task list.");
+
         }
 
         boolean exit = false;

@@ -57,7 +57,9 @@ public class List {
 
             Deadline deadlineTask = new Deadline(description, deadline);
             // Store original string for compatibility
+
             deadlineTask.setDeadline(deadline);
+
             newTask = deadlineTask;
             break;
 
@@ -77,8 +79,10 @@ public class List {
 
             Event eventTask = new Event(description, startTime, endTime);
             // Store original strings for compatibility
+
             eventTask.setStart(startTime);
             eventTask.setEnd(endTime);
+
             newTask = eventTask;
             break;
 
